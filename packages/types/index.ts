@@ -12,6 +12,8 @@ export type ActorType = 'admin' | 'partner'
 export type ReceiptStatus = 'pending' | 'approved' | 'rejected'
 export type LeadStatus = 'new' | 'contacted' | 'interested' | 'converted' | 'rejected'
 export type LeadSource = 'google_maps_scraper' | 'web_form' | 'manual'
+export type InvoiceStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'cancelled'
+export type SignatureStatus = 'pending' | 'otp_sent' | 'completed' | 'rejected' | 'expired' | 'cancelled'
 
 // ---------- Row types ----------
 
@@ -163,6 +165,52 @@ export interface LeadRow {
   last_contacted_at: string | null
 }
 
+export interface InvoiceLine {
+  description: string
+  quantity: number
+  unitPrice: number
+  vatRate: number
+}
+
+export interface InvoiceRow {
+  id: string
+  partner_id: string | null
+  external_id: string | null
+  invoice_no: string | null
+  ettn: string | null
+  status: InvoiceStatus
+  receiver_vkn: string
+  receiver_title: string
+  subtotal: number
+  vat_total: number
+  total: number
+  currency: string
+  invoice_date: string
+  pdf_url: string | null
+  lines: InvoiceLine[]
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface SignatureSessionRow {
+  id: string
+  document_type: string
+  document_ref_id: string
+  document_hash: string
+  document_title: string
+  signer_phone: string
+  signer_name: string
+  external_session_id: string | null
+  status: SignatureStatus
+  signature_value: string | null
+  certificate_serial: string | null
+  expires_at: string | null
+  completed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 // ---------- Insert / Update types ----------
 
 export type PartnerInsert = Omit<PartnerRow, 'id' | 'created_at' | 'updated_at'> & {
@@ -209,6 +257,20 @@ export type LeadInsert = Omit<LeadRow, 'id' | 'created_at' | 'updated_at'> & {
 }
 export type LeadUpdate = Partial<LeadInsert>
 
+export type InvoiceInsert = Omit<InvoiceRow, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string
+  created_at?: string
+  updated_at?: string
+}
+export type InvoiceUpdate = Partial<InvoiceInsert>
+
+export type SignatureSessionInsert = Omit<SignatureSessionRow, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string
+  created_at?: string
+  updated_at?: string
+}
+export type SignatureSessionUpdate = Partial<SignatureSessionInsert>
+
 // ---------- Convenience aliases ----------
 
 export type Partner = PartnerRow
@@ -218,6 +280,7 @@ export type Payment = PaymentRow
 export type PaymentReceipt = PaymentReceiptRow
 export type ActivityLog = ActivityLogRow
 export type Lead = LeadRow
+export type Invoice = InvoiceRow
 
 // ---------- Joined / enriched types ----------
 
@@ -287,6 +350,12 @@ export interface Database {
         Update: LeadUpdate
         Relationships: []
       }
+      invoices: {
+        Row: InvoiceRow
+        Insert: InvoiceInsert
+        Update: InvoiceUpdate
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -304,6 +373,7 @@ export interface Database {
       actor_type: ActorType
       receipt_status: ReceiptStatus
       lead_status: LeadStatus
+      invoice_status: InvoiceStatus
     }
     CompositeTypes: {
       [_ in never]: never
