@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "@sarjup/types": "*",
+    "@sentry/nextjs": "^8",
+    "posthog-js": "^1",
+    "posthog-node": "^4",
     "@sarjup/utils": "*",
     "@anthropic-ai/sdk": "^0.94.0",
     "@radix-ui/react-avatar": "^1.1.1",
