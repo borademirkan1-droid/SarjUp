@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const f=i.tool_input?.file_path||i.tool_input?.path||'';if(f.match(/\\.(ts|tsx)$/)&&!f.includes('node_modules')&&!f.includes('supabase/functions')&&!f.includes('.d.ts')){const{execSync}=require('child_process');const proj=f.includes('apps/panel')||f.includes('apps\\\\\\\\panel')?'apps/panel/tsconfig.json':f.includes('apps/website')||f.includes('apps\\\\\\\\website')?'apps/website/tsconfig.json':null;if(proj){try{execSync('cd C:/Users/Bora/Projects/SarjUp && npx tsc -p '+proj+' --noEmit 2>&1',{encoding:'utf8',timeout:30000,stdio:'pipe'})}catch(e){const out=(e.stdout||'').trim();if(out)console.log('[TS] '+out)}}}}catch(x){}});\"",
+            "description": "Auto TypeScript check after .ts/.tsx edit"
+          }
+        ]
+      }
+    ]
+  }
+}

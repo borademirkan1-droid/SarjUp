@@ -19,6 +19,20 @@ packages/
 └── utils/    → @sarjup/utils — Paylaşımlı formatters (formatCurrencyTRY vb.)
 ```
 
+## Otomatik Agent Kuralları (SEN ÇAĞIRMADAN ÇALIŞIR)
+
+| Durum | Agent |
+|-------|-------|
+| Herhangi bir kod yazıldı/değiştirildi | `code-reviewer` |
+| Auth / Supabase / ödeme / RLS kodu | `security-reviewer` |
+| Build veya tsc hata verdi | `build-error-resolver` |
+| Yeni feature başlıyor | `tdd-guide` |
+| Mimari karar gerekiyor | `architect` |
+| SQL sorgu / migration / RLS | `database-reviewer` |
+| TypeScript tip hatası | `typescript-reviewer` |
+
+**Kural:** Kod yazdıktan sonra her zaman `code-reviewer` spawn et. Güvenlik kodu varsa `security-reviewer` da ekle. Kullanıcı sormadan.
+
 ## Çalışma Kuralları
 
 ### 1. Net Çözüme Git
