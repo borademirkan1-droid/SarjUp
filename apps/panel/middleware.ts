@@ -55,6 +55,11 @@ if (pathname.startsWith('/api/webhooks/')) {
   return supabaseResponse
 }
 
+// e-İmza webhook — authenticated by HMAC signature, no session cookie needed
+if (pathname.startsWith('/api/esignature/webhook')) {
+  return supabaseResponse
+}
+
 // Protect other API routes
 if (pathname.startsWith('/api') && !user) {
   return Response.json({ error: 'Unauthorized' }, { status: 401 })

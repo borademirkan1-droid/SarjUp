@@ -281,6 +281,7 @@ export type PaymentReceipt = PaymentReceiptRow
 export type ActivityLog = ActivityLogRow
 export type Lead = LeadRow
 export type Invoice = InvoiceRow
+export type SignatureSession = SignatureSessionRow
 
 // ---------- Joined / enriched types ----------
 
@@ -356,6 +357,12 @@ export interface Database {
         Update: InvoiceUpdate
         Relationships: []
       }
+      signature_sessions: {
+        Row: SignatureSessionRow
+        Insert: SignatureSessionInsert
+        Update: SignatureSessionUpdate
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -374,6 +381,7 @@ export interface Database {
       receipt_status: ReceiptStatus
       lead_status: LeadStatus
       invoice_status: InvoiceStatus
+      signature_status: SignatureStatus
     }
     CompositeTypes: {
       [_ in never]: never
