@@ -36,7 +36,12 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
 // Allow public paths
-if (pathname.startsWith('/login') || pathname.startsWith('/_next')) {
+if (
+  pathname.startsWith('/login') ||
+  pathname.startsWith('/_next') ||
+  pathname.startsWith('/onboarding') ||
+  pathname.startsWith('/api/onboarding')
+) {
   return supabaseResponse
 }
 
