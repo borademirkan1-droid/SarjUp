@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="120" height="40">
+  <rect width="240" height="80" rx="8" fill="#00A3D9"/>
+  <text x="20" y="30" font-family="Arial,sans-serif" font-size="13" fill="white" font-weight="600" letter-spacing="0.5">iyzico ile öde</text>
+  <text x="20" y="60" font-family="Arial,sans-serif" font-size="28" fill="white" font-weight="800" letter-spacing="-0.5">iyzico</text>
+  <circle cx="215" cy="40" r="16" fill="white" opacity="0.2"/>
+  <path d="M208 40 l5 6 l9-11" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
