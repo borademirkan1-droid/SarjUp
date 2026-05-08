@@ -45,6 +45,11 @@ if (pathname.startsWith('/api/mobile/') || pathname.startsWith('/api/receipts/')
   return supabaseResponse
 }
 
+// Webhook routes are authenticated by payload signatures — no session cookie needed
+if (pathname.startsWith('/api/webhooks/')) {
+  return supabaseResponse
+}
+
 // Protect other API routes
 if (pathname.startsWith('/api') && !user) {
   return Response.json({ error: 'Unauthorized' }, { status: 401 })

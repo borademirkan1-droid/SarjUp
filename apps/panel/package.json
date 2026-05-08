@@ -42,7 +42,9 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "xlsx": "^0.18.5",
-    "expo-server-sdk": "^3"
+    "expo-server-sdk": "^3",
+    "iyzipay": "^2",
+    "svix": "^1"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
