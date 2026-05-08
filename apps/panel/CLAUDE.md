@@ -5,7 +5,7 @@ B2B akıllı telefon şarj cihazı kiralama yönetim paneli.
 - Next.js 14 + TypeScript + Tailwind + Shadcn/ui
 - Supabase Auth + RLS (3 rol: SUPER_ADMIN > ADMIN > PARTNER)
 - Canlı: https://admin.sarjup.com.tr (Vercel)
-- Repo: github.com/borademirkan1-droid/sarjup-panel
+- Repo: github.com/borademirkan1-droid/SarjUp (monorepo → apps/panel)
 
 ## Çalışma Kuralları
 
