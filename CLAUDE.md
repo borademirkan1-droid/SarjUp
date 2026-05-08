@@ -19,19 +19,66 @@ packages/
 └── utils/    → @sarjup/utils — Paylaşımlı formatters (formatCurrencyTRY vb.)
 ```
 
-## Otomatik Agent Kuralları (SEN ÇAĞIRMADAN ÇALIŞIR)
+## Otomatik Routing — Prompt → Agent/Skill (KULLANICI SORMADAN)
 
-| Durum | Agent |
-|-------|-------|
-| Herhangi bir kod yazıldı/değiştirildi | `code-reviewer` |
-| Auth / Supabase / ödeme / RLS kodu | `security-reviewer` |
-| Build veya tsc hata verdi | `build-error-resolver` |
-| Yeni feature başlıyor | `tdd-guide` |
-| Mimari karar gerekiyor | `architect` |
-| SQL sorgu / migration / RLS | `database-reviewer` |
-| TypeScript tip hatası | `typescript-reviewer` |
+Sen her prompt'u analiz edip doğru agent/skill'i otomatik devreye alırsın.
 
-**Kural:** Kod yazdıktan sonra her zaman `code-reviewer` spawn et. Güvenlik kodu varsa `security-reviewer` da ekle. Kullanıcı sormadan.
+### KOD & TEKNİK
+| Prompt içeriyorsa | Otomatik çalıştır |
+|-------------------|------------------|
+| Kod yazıldı/değiştirildi | `code-reviewer` agent |
+| Auth / session / JWT / RLS / ödeme kodu | `security-reviewer` agent |
+| Build / tsc / next build hata | `build-error-resolver` agent |
+| Yeni feature / yeni sayfa | `tdd-guide` agent → önce test |
+| Mimari karar / servis ekleme | `architect` agent |
+| SQL / migration / Supabase / RLS | `database-reviewer` agent |
+| TypeScript tip hatası / generic | `typescript-reviewer` agent |
+| Yavaş sayfa / N+1 / bundle | `performance-optimizer` agent |
+| Ölü kod / büyük dosya / duplicate | `refactor-cleaner` agent |
+| Sessiz hata / try-catch yutma | `silent-failure-hunter` agent |
+
+### PAZARLAMA & İÇERİK
+| Prompt içeriyorsa | Otomatik çalıştır |
+|-------------------|------------------|
+| İçerik / blog / metin / kopya yaz | `/content-engine` skill |
+| Marka sesi / ton / mesaj | `/brand-voice` skill |
+| Sosyal medya paylaşımı | `/crosspost` skill |
+| SEO / meta / anahtar kelime | `/seo` skill + `seo-specialist` agent |
+| Video içerik | `/fal-ai-media` skill |
+| Instagram / Facebook / Meta | `/social-graph-ranker` skill |
+| X / Twitter | `/x-api` skill |
+
+### SATIŞ & LEAD
+| Prompt içeriyorsa | Otomatik çalıştır |
+|-------------------|------------------|
+| Lead / müşteri araştır / profil | `/lead-intelligence` skill |
+| Yatırımcı / pitch / deck | `/investor-materials` skill |
+| Pazar araştırması / rakip analizi | `/market-research` skill + `/deep-research` skill |
+| Outreach / iletişim şablonu | `/investor-outreach` skill |
+
+### OPERASYONve İLETİŞİM
+| Prompt içeriyorsa | Otomatik çalıştır |
+|-------------------|------------------|
+| Email / mail şablonu / kampanya | `/email-ops` skill |
+| WhatsApp / SMS / bildirim | `/unified-notifications-ops` skill |
+| Lojistik / kargo / teslimat | `/logistics-exception-management` skill |
+| Döküman / sözleşme / belge | `/nutrient-document-processing` skill |
+| Google Docs / Sheets / Drive | `/google-workspace-ops` skill |
+
+### STRATEJİ & ARAŞTIRMA
+| Prompt içeriyorsa | Otomatik çalıştır |
+|-------------------|------------------|
+| Strateji / yol haritası / karar | `/strategic-compact` skill |
+| Çok perspektif / analiz / değerlendirme | `/council` skill |
+| Araştır / bul / incele | `/deep-research` skill |
+| Proje planı / sprint / task | `/blueprint` skill |
+
+### LOG KURALI
+Her agent spawn edildiğinde şunu çalıştır:
+```bash
+node "C:/Users/Bora/.claude/scripts/log-agent.js" <kategori> "<mesaj>"
+```
+Kategoriler: `agents`, `code`, `security`, `build`, `marketing`, `ops`
 
 ## Çalışma Kuralları
 
