@@ -1,0 +1,26 @@
+{
+  "name": "sarjup",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:panel": "turbo dev --filter=panel",
+    "dev:website": "turbo dev --filter=website",
+    "dev:victor": "turbo dev --filter=victor-app",
+    "build": "turbo build",
+    "build:panel": "turbo build --filter=panel",
+    "build:website": "turbo build --filter=website",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=18"
+  }
+}

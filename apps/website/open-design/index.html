@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Şarjup — Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── DESIGN TOKENS ──────────────────────────────────────────── */
+    :root {
+      --color-blue:       #0066FF;
+      --color-blue-light: #3B82F6;
+      --color-blue-dim:   rgba(59,130,246,0.5);
+      --color-emerald:    #10B981;
+      --color-teal:       #14B8A6;
+      --color-sky:        #38BDF8;
+
+      --bg-dark:          #020617;   /* slate-950 */
+      --bg-card:          rgba(15,23,42,0.8);
+      --bg-card-hover:    rgba(30,41,59,0.8);
+      --border:           rgba(148,163,184,0.12);
+      --border-hover:     rgba(59,130,246,0.4);
+
+      --text-primary:     #F8FAFC;
+      --text-secondary:   rgba(248,250,252,0.7);
+      --text-muted:       rgba(248,250,252,0.45);
+
+      --gradient-brand:   linear-gradient(135deg, #0066FF 0%, #10B981 100%);
+      --gradient-hero:    linear-gradient(180deg, #020617 0%, #0a1628 100%);
+
+      --radius-sm:        8px;
+      --radius-md:        12px;
+      --radius-lg:        20px;
+      --radius-xl:        28px;
+
+      --shadow-glow-blue: 0 0 40px rgba(0,102,255,0.3);
+      --shadow-glow-green:0 0 40px rgba(16,185,129,0.3);
+      --shadow-card:      0 8px 32px rgba(0,0,0,0.4);
+
+      --font-family:      'Inter', -apple-system, sans-serif;
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: var(--font-family); scroll-behavior: smooth; }
+    body { background: var(--bg-dark); color: var(--text-primary); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── LAYOUT HELPERS ─────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section   { padding: 96px 0; }
+    .section-sm{ padding: 64px 0; }
+    .flex      { display: flex; }
+    .grid      { display: grid; }
+    .gap-4     { gap: 16px; }
+    .gap-6     { gap: 24px; }
+    .gap-8     { gap: 32px; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .text-center { text-align: center; }
+
+    /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+    .text-xs   { font-size:12px; line-height:1.5; }
+    .text-sm   { font-size:14px; line-height:1.5; }
+    .text-base { font-size:16px; line-height:1.6; }
+    .text-lg   { font-size:18px; line-height:1.5; }
+    .text-xl   { font-size:20px; line-height:1.4; }
+    .text-2xl  { font-size:24px; line-height:1.3; }
+    .text-3xl  { font-size:30px; line-height:1.2; }
+    .text-4xl  { font-size:36px; line-height:1.15; }
+    .text-5xl  { font-size:48px; line-height:1.1; }
+    .text-6xl  { font-size:60px; line-height:1.05; }
+    .text-7xl  { font-size:72px; line-height:1; }
+
+    .font-300  { font-weight:300; }
+    .font-400  { font-weight:400; }
+    .font-500  { font-weight:500; }
+    .font-600  { font-weight:600; }
+    .font-700  { font-weight:700; }
+    .font-800  { font-weight:800; }
+    .font-900  { font-weight:900; }
+
+    .text-muted    { color: var(--text-muted); }
+    .text-secondary{ color: var(--text-secondary); }
+
+    .gradient-text {
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── BACKGROUNDS / BLOBS ────────────────────────────────────── */
+    .mesh-bg {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .blob {
+      position: absolute; border-radius: 9999px;
+      filter: blur(120px); will-change: transform;
+    }
+    .blob-1 { width:500px; height:500px; left:-8%;  top:-10%; background:rgba(0,102,255,0.35); }
+    .blob-2 { width:400px; height:400px; right:-8%; top:15%;  background:rgba(16,185,129,0.3); }
+    .blob-3 { width:450px; height:450px; left:20%;  bottom:-15%; background:rgba(20,184,166,0.28); }
+
+    /* ─── NAVBAR ─────────────────────────────────────────────────── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(2,6,23,0.8);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .navbar-inner {
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 20px;
+    }
+    .logo-icon {
+      width:36px; height:36px; border-radius:10px;
+      background: var(--gradient-brand);
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+    }
+    .logo-text { letter-spacing:-0.3px; }
+    .logo-text span { color: var(--color-emerald); }
+    .nav-links { display:flex; gap:32px; list-style:none; }
+    .nav-links a { font-size:14px; font-weight:500; color:var(--text-secondary); transition:color .2s; }
+    .nav-links a:hover { color:var(--text-primary); }
+    .nav-right { display:flex; gap:12px; align-items:center; }
+
+    /* ─── BUTTONS ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: var(--radius-md);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all .2s;
+    }
+    .btn-primary {
+      background: var(--color-blue);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0,102,255,0.3);
+    }
+    .btn-primary:hover { background:#0052CC; box-shadow:0 0 30px rgba(0,102,255,0.5); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color:var(--border-hover); color:var(--text-primary); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover { background:rgba(255,255,255,0.08); color:var(--text-primary); }
+
+    .btn-lg { padding:14px 28px; font-size:16px; border-radius:var(--radius-lg); }
+    .btn-sm { padding:7px 14px; font-size:13px; }
+    .btn-emerald {
+      background: var(--color-emerald);
+      color:#fff;
+      box-shadow:0 0 20px rgba(16,185,129,0.3);
+    }
+    .btn-gradient {
+      background: var(--gradient-brand);
+      color:#fff;
+      box-shadow:0 4px 24px rgba(0,102,255,0.35);
+    }
+    .btn-gradient:hover { opacity:.9; box-shadow:0 4px 32px rgba(0,102,255,0.5); }
+
+    /* ─── BADGE / CHIP ───────────────────────────────────────────── */
+    .badge {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 12px; border-radius:999px; font-size:12px; font-weight:600;
+    }
+    .badge-blue   { background:rgba(0,102,255,0.15); color:var(--color-blue-light); border:1px solid rgba(0,102,255,0.3); }
+    .badge-green  { background:rgba(16,185,129,0.15); color:var(--color-emerald);   border:1px solid rgba(16,185,129,0.3); }
+    .badge-teal   { background:rgba(20,184,166,0.15); color:var(--color-teal);      border:1px solid rgba(20,184,166,0.3); }
+    .badge-white  { background:rgba(255,255,255,0.08); color:var(--text-secondary); border:1px solid var(--border); }
+
+    /* ─── CARDS ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: all .25s;
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-card);
+      transform: translateY(-2px);
+    }
+    .card-glow-blue:hover  { box-shadow: var(--shadow-glow-blue); }
+    .card-glow-green:hover { box-shadow: var(--shadow-glow-green); }
+
+    /* ─── INPUTS ─────────────────────────────────────────────────── */
+    .input {
+      width:100%; background:rgba(15,23,42,0.6);
+      border:1px solid var(--border); border-radius:var(--radius-md);
+      padding:12px 16px; font-family:var(--font-family);
+      font-size:15px; color:var(--text-primary);
+      outline:none; transition:border-color .2s;
+    }
+    .input::placeholder { color:var(--text-muted); }
+    .input:focus { border-color:var(--color-blue); box-shadow:0 0 0 3px rgba(0,102,255,0.15); }
+
+    /* ─── DIVIDER ─────────────────────────────────────────────────── */
+    .divider { border:none; border-top:1px solid var(--border); margin:0; }
+    .divider-gradient {
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--color-blue), transparent);
+    }
+
+    /* ══════════════════════════════════════════════════════════════ */
+    /*  PAGE SECTIONS                                                  */
+    /* ══════════════════════════════════════════════════════════════ */
+
+    /* ─── 1. HERO ─────────────────────────────────────────────────── */
+    .hero {
+      position:relative; min-height:100vh;
+      display:flex; align-items:center; overflow:hidden;
+    }
+    .hero-content {
+      position:relative; z-index:2;
+      max-width:740px;
+    }
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 16px; border-radius:999px;
+      background:rgba(0,102,255,0.12); border:1px solid rgba(0,102,255,0.3);
+      font-size:13px; font-weight:600; color:var(--color-blue-light);
+      margin-bottom:24px;
+    }
+    .hero-eyebrow::before {
+      content:''; display:block; width:6px; height:6px;
+      border-radius:50%; background:var(--color-blue);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:.5;transform:scale(1.4)}
+    }
+    .hero h1 {
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight:800; line-height:1.05; letter-spacing:-2px;
+      margin-bottom:24px;
+    }
+    .hero-sub {
+      font-size:18px; color:var(--text-secondary); line-height:1.7;
+      max-width:580px; margin-bottom:40px;
+    }
+    .hero-cta { display:flex; gap:12px; flex-wrap:wrap; }
+
+    /* ─── 2. STATS ────────────────────────────────────────────────── */
+    .stats-grid {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
+    }
+    .stat-card {
+      text-align:center; padding:32px 20px;
+    }
+    .stat-number {
+      font-size:48px; font-weight:800; letter-spacing:-2px;
+      background:var(--gradient-brand);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text; line-height:1;
+      margin-bottom:8px;
+    }
+    .stat-label {
+      font-size:13px; color:var(--text-muted); font-weight:500;
+      text-transform:uppercase; letter-spacing:.6px;
+    }
+    .stat-desc { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+
+    /* ─── 3. FEATURES ─────────────────────────────────────────────── */
+    .features-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+    }
+    .feature-icon {
+      width:48px; height:48px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px; margin-bottom:16px;
+    }
+    .feature-icon-blue  { background:rgba(0,102,255,0.15); }
+    .feature-icon-green { background:rgba(16,185,129,0.15); }
+    .feature-icon-teal  { background:rgba(20,184,166,0.15); }
+
+    /* ─── 4. HOW IT WORKS (TIMELINE) ─────────────────────────────── */
+    .timeline {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
+      position:relative;
+    }
+    .timeline::before {
+      content:''; position:absolute;
+      top:36px; left:10%; right:10%; height:2px;
+      background:linear-gradient(90deg, var(--color-blue), var(--color-emerald));
+    }
+    .timeline-step { text-align:center; padding-top:8px; }
+    .step-num {
+      width:52px; height:52px; border-radius:50%;
+      background:var(--gradient-brand);
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; font-weight:800; color:#fff;
+      margin:0 auto 16px;
+      box-shadow:0 0 20px rgba(0,102,255,0.4);
+    }
+    .step-title { font-size:15px; font-weight:600; margin-bottom:6px; }
+    .step-desc  { font-size:13px; color:var(--text-muted); line-height:1.5; }
+
+    /* ─── 5. CTA SECTION ──────────────────────────────────────────── */
+    .cta-section {
+      position:relative; overflow:hidden;
+      text-align:center; border-radius:var(--radius-xl);
+      padding:80px 40px;
+      background: linear-gradient(135deg, rgba(0,102,255,0.15) 0%, rgba(16,185,129,0.1) 100%);
+      border:1px solid rgba(0,102,255,0.25);
+    }
+
+    /* ─── 6. FOOTER ───────────────────────────────────────────────── */
+    footer {
+      border-top:1px solid var(--border);
+      padding:48px 0 32px;
+    }
+    .footer-grid {
+      display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px;
+      margin-bottom:40px;
+    }
+    .footer-brand p { font-size:14px; color:var(--text-muted); margin-top:12px; max-width:280px; }
+    .footer-col h4 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); margin-bottom:16px; }
+    .footer-col ul { list-style:none; }
+    .footer-col li { margin-bottom:10px; }
+    .footer-col a  { font-size:14px; color:var(--text-secondary); transition:color .2s; }
+    .footer-col a:hover { color:var(--text-primary); }
+    .footer-bottom {
+      padding-top:24px; border-top:1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .footer-bottom p { font-size:13px; color:var(--text-muted); }
+    .social-links { display:flex; gap:12px; }
+    .social-icon {
+      width:36px; height:36px; border-radius:10px;
+      background:rgba(255,255,255,0.05); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; transition:all .2s;
+    }
+    .social-icon:hover { background:rgba(0,102,255,0.15); border-color:rgba(0,102,255,0.4); }
+
+    /* ─── SECTION HEADER ─────────────────────────────────────────── */
+    .section-header { text-align:center; margin-bottom:56px; }
+    .section-header h2 { font-size:clamp(28px,3.5vw,42px); font-weight:800; letter-spacing:-1px; margin-bottom:12px; }
+    .section-header p  { font-size:17px; color:var(--text-secondary); max-width:540px; margin:0 auto; }
+
+    /* ─── DESIGN TOKENS SHOWCASE ─────────────────────────────────── */
+    .token-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
+    .color-swatch {
+      border-radius:var(--radius-md); overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .swatch-color { height:72px; }
+    .swatch-info  { padding:10px 12px; background:var(--bg-card); }
+    .swatch-name  { font-size:12px; font-weight:600; }
+    .swatch-hex   { font-size:11px; color:var(--text-muted); margin-top:2px; font-family:monospace; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    @media(max-width:768px){
+      .stats-grid  { grid-template-columns:repeat(2,1fr); }
+      .features-grid{ grid-template-columns:1fr; }
+      .timeline    { grid-template-columns:repeat(2,1fr); }
+      .timeline::before { display:none; }
+      .footer-grid { grid-template-columns:1fr; gap:32px; }
+      .navbar-inner{ padding:0 16px; }
+      .nav-links   { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  NAVBAR                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span class="logo-text">Şarj<span>Up</span></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#hakkimizda">Hakkımızda</a></li>
+        <li><a href="#cozumler">Çözümler</a></li>
+        <li><a href="#partnerler">Partnerler</a></li>
+        <li><a href="#iletisim">İletişim</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="btn btn-ghost btn-sm">🌙</button>
+        <a href="https://admin.sarjup.com.tr" class="btn btn-primary btn-sm">Panel Girişi</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  HERO                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="mesh-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Yeni Nesil Şarj Teknolojisi</div>
+      <h1>
+        Modern işletmeler için<br/>
+        <span class="gradient-text">akıllı şarj çözümü</span>
+      </h1>
+      <p class="hero-sub">
+        Şarjup, müşterilerinize masadan ayrılmadan kişisel cihazlarını
+        şarj edebilecekleri güvenli ve otonom bir hizmet sunan akıllı şarj çözümüdür.
+      </p>
+      <div class="hero-cta">
+        <a href="#partnerler" class="btn btn-gradient btn-lg">Yetkili İş Ortağı Ol</a>
+        <a href="#iletisim" class="btn btn-outline btn-lg">Bize Ulaşın →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-gradient" style="margin:0;"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  STATS                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="section-sm" id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="card stat-card card-glow-blue">
+        <div class="stat-number">20K</div>
+        <div class="stat-label">mAh</div>
+        <div class="stat-desc">Yüksek kapasiteli batarya</div>
+      </div>
+      <div class="card stat-card card-glow-green">
+        <div class="stat-number">%80+</div>
+        <div class="stat-label">Artış</div>
+        <div class="stat-desc">Müşteri memnuniyeti</div>
+      </div>
+      <div class="card stat-card card-glow-blue">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Hizmet</div>
+        <div class="stat-desc">Kesintisiz çalışma</div>
+      </div>
+      <div class="card stat-card card-glow-green">
+        <div class="stat-number">Sıfır</div>
+        <div class="stat-label">Risk</div>
+        <div class="stat-desc">Sorumluluk & kayıp</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  FEATURES / ÇÖZÜMLER                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="cozumler">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge badge-blue" style="margin-bottom:16px;">Neden Şarjup?</span>
+      <h2>İşletmenize <span class="gradient-text">üç temel fayda</span></h2>
+      <p>Müşteri deneyimini artırın, ek gelir elde edin, hiçbir riskiniz olmadan.</p>
+    </div>
+    <div class="features-grid">
+      <div class="card card-glow-blue">
+        <div class="feature-icon feature-icon-blue">😊</div>
+        <h3 class="text-xl font-700" style="margin-bottom:8px;">Müşteri Memnuniyeti</h3>
+        <p class="text-secondary text-sm">
+          Müşterileriniz masadan ayrılmadan telefonlarını şarj eder.
+          Daha uzun kalır, daha fazla sipariş verir.
+        </p>
+      </div>
+      <div class="card card-glow-green">
+        <div class="feature-icon feature-icon-green">📈</div>
+        <h3 class="text-xl font-700" style="margin-bottom:8px;">Ek Gelir Kapısı</h3>
+        <p class="text-secondary text-sm">
+          Şarj hizmeti üzerinden aylık sabit gelir elde edin.
+          Mevcut müşteri tabanınızdan ekstra kazanç.
+        </p>
+      </div>
+      <div class="card card-glow-blue">
+        <div class="feature-icon feature-icon-teal">🛡</div>
+        <h3 class="text-xl font-700" style="margin-bottom:8px;">Sıfır Risk</h3>
+        <p class="text-secondary text-sm">
+          Emanet cihaz sorumluluğu, kayıp ve hasar riski tamamen sıfır.
+          Yasal yükümlülük yok.
+        </p>
+      </div>
+    </div>
+
+    <!-- Features alt grid -->
+    <div class="grid gap-4" style="grid-template-columns:repeat(3,1fr); margin-top:20px;">
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">⚡</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">20.000 mAh Batarya</div>
+          <div class="text-muted text-xs">Yüksek kapasite, uzun ömür</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">📲</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">NFC ile Aktivasyon</div>
+          <div class="text-muted text-xs">Saniyeler içinde, temassız</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">🔋</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">Hızlı Şarj</div>
+          <div class="text-muted text-xs">Kısa sürede yüksek doluş</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">🎨</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">Modern Tasarım</div>
+          <div class="text-muted text-xs">Masaüstü uyumlu, şık</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">🔒</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">Güvenli & Otonom</div>
+          <div class="text-muted text-xs">Sertifikalı teknoloji</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:22px;">♾️</span>
+        <div>
+          <div class="font-600 text-sm" style="margin-bottom:4px;">Uzun Ömürlü</div>
+          <div class="text-muted text-xs">Dayanıklı altyapı</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  HOW IT WORKS                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="section" style="background:rgba(0,102,255,0.04); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge badge-green" style="margin-bottom:16px;">Nasıl Çalışır?</span>
+      <h2><span class="gradient-text">4 adımda</span> hazır</h2>
+      <p>Partner programımıza katılmak ve gelir elde etmeye başlamak çok kolay.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-step">
+        <div class="step-num">1</div>
+        <div class="step-title">Şarjup Partneri Olun</div>
+        <div class="step-desc">Başvurunuzu yapın, bölgenizde yetkili iş ortağı statüsü alın.</div>
+      </div>
+      <div class="timeline-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Cihazları Teslim Alın</div>
+        <div class="step-desc">Şarjup cihazlarını sizinle anlaşmalı noktalardan teslim alın.</div>
+      </div>
+      <div class="timeline-step">
+        <div class="step-num">3</div>
+        <div class="step-title">İşletmelere Yerleştirin</div>
+        <div class="step-desc">Kafe, restoran, otel gibi işletmelere aylık abonelikle kiralayın.</div>
+      </div>
+      <div class="timeline-step">
+        <div class="step-num">4</div>
+        <div class="step-title">Ciro Artışını İzleyin</div>
+        <div class="step-desc">Uygulamadan ödemelerinizi alın, gelirlerinizi takip edin.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  CTA                                                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="partnerler">
+  <div class="container">
+    <div class="cta-section">
+      <div class="blob" style="width:350px;height:350px;left:-5%;top:-30%;background:rgba(0,102,255,0.2);filter:blur(100px);"></div>
+      <div class="blob" style="width:300px;height:300px;right:-5%;bottom:-30%;background:rgba(16,185,129,0.2);filter:blur(100px);"></div>
+      <div style="position:relative; z-index:2;">
+        <span class="badge badge-blue" style="margin-bottom:20px;">Sınırlı Bölge Kontenjanı</span>
+        <h2 style="font-size:clamp(28px,4vw,48px); font-weight:800; letter-spacing:-1.5px; margin-bottom:16px;">
+          Şarjup Partneri Olmak<br/><span class="gradient-text">İster misiniz?</span>
+        </h2>
+        <p style="font-size:17px; color:var(--text-secondary); max-width:480px; margin:0 auto 36px;">
+          Bölgenizdeki işletmelere Şarjup cihazları kiralayın,
+          aylık pasif gelir elde edin.
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <a href="#iletisim" class="btn btn-gradient btn-lg">Hemen Başvurun</a>
+          <a href="https://wa.me/905403664141" class="btn btn-outline btn-lg">💬 WhatsApp İle Yaz</a>
+        </div>
+        <div style="display:flex; gap:32px; justify-content:center; margin-top:36px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary);">
+            <span style="color:var(--color-emerald);">✓</span> Başlangıç yatırımı yok
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary);">
+            <span style="color:var(--color-emerald);">✓</span> Aylık garantili gelir
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary);">
+            <span style="color:var(--color-emerald);">✓</span> Teknik destek dahil
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary);">
+            <span style="color:var(--color-emerald);">✓</span> Bölge münhasırlığı
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  CONTACT FORM                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="iletisim" style="border-top:1px solid var(--border);">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge badge-teal" style="margin-bottom:16px;">İletişim</span>
+      <h2>Bizimle <span class="gradient-text">iletişime geçin</span></h2>
+      <p>Sorularınız için arayın veya formu doldurun, en kısa sürede geri dönelim.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:40px; align-items:start;">
+      <!-- Contact info -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="card" style="display:flex; gap:16px; align-items:center;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,102,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">📞</div>
+          <div>
+            <div class="font-600 text-sm">Telefon / WhatsApp</div>
+            <div class="text-muted text-sm">0540 366 41 41</div>
+          </div>
+        </div>
+        <div class="card" style="display:flex; gap:16px; align-items:center;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">✉️</div>
+          <div>
+            <div class="font-600 text-sm">E-posta</div>
+            <div class="text-muted text-sm">info@sarjup.com.tr</div>
+          </div>
+        </div>
+        <div class="card" style="display:flex; gap:16px; align-items:center;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(20,184,166,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">📍</div>
+          <div>
+            <div class="font-600 text-sm">Konum</div>
+            <div class="text-muted text-sm">Kocaeli / İzmit</div>
+          </div>
+        </div>
+        <div class="card" style="display:flex; gap:16px; align-items:center;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,102,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">🕐</div>
+          <div>
+            <div class="font-600 text-sm">Çalışma Saatleri</div>
+            <div class="text-muted text-sm">Hft içi 09:00 – 18:00</div>
+          </div>
+        </div>
+      </div>
+      <!-- Form -->
+      <div class="card">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="text-sm font-500" style="display:block;margin-bottom:6px;">Ad Soyad</label>
+            <input class="input" type="text" placeholder="Adınız" />
+          </div>
+          <div>
+            <label class="text-sm font-500" style="display:block;margin-bottom:6px;">Telefon</label>
+            <input class="input" type="tel" placeholder="0500 000 00 00" />
+          </div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label class="text-sm font-500" style="display:block;margin-bottom:6px;">E-posta</label>
+          <input class="input" type="email" placeholder="ornek@email.com" />
+        </div>
+        <div style="margin-bottom:14px;">
+          <label class="text-sm font-500" style="display:block;margin-bottom:6px;">Konu</label>
+          <select class="input" style="cursor:pointer;">
+            <option>Partner olmak istiyorum</option>
+            <option>Ürün hakkında bilgi</option>
+            <option>Teknik destek</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label class="text-sm font-500" style="display:block;margin-bottom:6px;">Mesaj</label>
+          <textarea class="input" rows="4" placeholder="Mesajınızı yazın..." style="resize:vertical;"></textarea>
+        </div>
+        <button class="btn btn-gradient" style="width:100%;justify-content:center;padding:14px;">
+          Gönder →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon">⚡</div>
+          <span class="logo-text">Şarj<span>Up</span></span>
+        </div>
+        <p>Modern işletmeler için akıllı şarj çözümü. Müşterilerinize masadan ayrılmadan şarj imkanı sunun.</p>
+        <div class="social-links" style="margin-top:20px;">
+          <a href="https://instagram.com/sarjup_" class="social-icon">📸</a>
+          <a href="https://wa.me/905403664141" class="social-icon">💬</a>
+          <a href="#" class="social-icon">📱</a>
+          <a href="#" class="social-icon">👥</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Şirket</h4>
+        <ul>
+          <li><a href="/hakkimizda">Hakkımızda</a></li>
+          <li><a href="/cozumler">Çözümler</a></li>
+          <li><a href="/partnerler">Partner Programı</a></li>
+          <li><a href="/iletisim">İletişim</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>İletişim</h4>
+        <ul>
+          <li><a href="tel:05403664141">0540 366 41 41</a></li>
+          <li><a href="mailto:info@sarjup.com.tr">info@sarjup.com.tr</a></li>
+          <li><a href="mailto:partner@sarjup.com.tr">partner@sarjup.com.tr</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Yasal</h4>
+        <ul>
+          <li><a href="/kvkk">KVKK</a></li>
+          <li><a href="/gizlilik">Gizlilik Politikası</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Şarjup. Tüm hakları saklıdır.</p>
+      <p>sarjup.com.tr</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

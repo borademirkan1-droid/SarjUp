@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # Next.js 15 major upgrade requires code migration — ignore until ready
+    ignore:
+      - dependency-name: "next"
+        versions: ["15.x", ">=15"]
+      - dependency-name: "@types/react"
+        versions: ["19.x", ">=19"]
+      - dependency-name: "react"
+        versions: ["19.x", ">=19"]
+      - dependency-name: "react-dom"
+        versions: ["19.x", ">=19"]
