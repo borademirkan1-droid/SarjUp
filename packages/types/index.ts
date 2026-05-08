@@ -132,6 +132,14 @@ export interface ActivityLogRow {
   created_at: string
 }
 
+export type LeadPipelineStatus =
+  | 'new'
+  | 'contacted'
+  | 'qualified'
+  | 'proposal'
+  | 'won'
+  | 'lost'
+
 export interface LeadRow {
   id: string
   first_name: string
@@ -149,6 +157,10 @@ export interface LeadRow {
   converted_partner_id: string | null
   created_at: string
   updated_at: string
+  // Pipeline kolonları (migration: 20260508000015_add_lead_pipeline)
+  pipeline_status: LeadPipelineStatus | null
+  pipeline_note: string | null
+  last_contacted_at: string | null
 }
 
 // ---------- Insert / Update types ----------
