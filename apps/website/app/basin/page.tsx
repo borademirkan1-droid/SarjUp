@@ -20,13 +20,13 @@ export default function BasinPage() {
           content: (
             <>
               <p>
-                Şarjup, Türkiye'de B2B akıllı telefon şarj cihazı kiralama hizmeti sunan bir teknoloji girişimidir.
+                Şarjup, Türkiye&apos;de B2B akıllı telefon şarj cihazı kiralama hizmeti sunan bir teknoloji girişimidir.
                 Kafe, restoran, otel, AVM ve havalimanı gibi işletmelere cihaz kiralayarak müşteri memnuniyetini
                 artırma ve ek gelir elde etme imkânı sağlar.
               </p>
               <p>
                 NFC ve QR tabanlı şarj sistemi ile güvenli ödeme altyapısını bir arada sunan Şarjup,
-                2026 yılında Kocaeli'nde kurulmuştur.
+                2026 yılında Kocaeli&apos;nde kurulmuştur.
               </p>
             </>
           ),
@@ -66,7 +66,7 @@ export default function BasinPage() {
           content: (
             <>
               <p>
-                Röportaj, haber veya iş birliği talepleri için:
+                Röportaj, haber veya iş birliği talepleri için aşağıdaki kanallardan ulaşabilirsiniz:
               </p>
               <ul>
                 <li><strong>E-posta:</strong> basin@sarjup.com.tr</li>

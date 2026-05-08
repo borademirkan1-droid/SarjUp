@@ -42,7 +42,7 @@ export default function KariyerPage() {
               </p>
               <p>
                 Yazılım geliştirme, satış, operasyon veya pazarlama alanlarında kendinizi görmek istiyorsanız{" "}
-                <strong>kariyer@sarjup.com.tr</strong> adresine CV'nizi gönderin.
+                <strong>kariyer@sarjup.com.tr</strong> adresine CV&apos;nizi gönderin.
               </p>
               <ul>
                 <li><strong>Full-Stack Geliştirici</strong> — Next.js, React Native, Supabase</li>
