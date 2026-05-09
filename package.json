@@ -8,7 +8,6 @@
   "scripts": {
     "dev:panel": "turbo dev --filter=panel",
     "dev:website": "turbo dev --filter=website",
-    "dev:victor": "turbo dev --filter=victor-app",
     "build": "turbo build",
     "build:panel": "turbo build --filter=panel",
     "build:website": "turbo build --filter=website",
