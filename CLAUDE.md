@@ -11,8 +11,7 @@ B2B akıllı telefon şarj cihazı kiralama ekosistemi.
 apps/
 ├── panel/    → Admin panel (Next.js 14) — admin.sarjup.com.tr
 ├── website/  → Pazarlama sitesi (Next.js 14) — sarjup.com.tr
-├── mobile/   → Partner Android uygulaması (Expo 54, React Native)
-└── victor/   → Claude Code worker + proje yönetim paneli (Next.js 16)
+└── mobile/   → Partner Android uygulaması (Expo 54, React Native)
 
 packages/
 ├── types/    → @sarjup/types — Tüm Supabase DB tipleri (TEK KAYNAK)
