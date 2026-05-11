@@ -1,5 +1,7 @@
 # SarjUp Monorepo — Claude Kuralları
 
+> Devir teslim notu için: @HANDOFF.md
+
 ## Proje Özeti
 B2B akıllı telefon şarj cihazı kiralama ekosistemi.
 - Supabase Project ID: `turvyyedodkpnvlrorst`
