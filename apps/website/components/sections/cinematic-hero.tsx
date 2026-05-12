@@ -19,16 +19,16 @@ function isVideo(src: string) {
 
 function ProductStage({ mediaSrc, alt = "ŞarjUp cihazı", className }: ProductStageProps) {
   const reducedMotion = useReducedMotion();
-  const src = mediaSrc || "/cihaz/cihaz-ozellikler.png";
+  const src = mediaSrc || "/cihaz/cihaz-hero.webp";
   const isMediaVideo = isVideo(src);
 
   return (
     <motion.div
-      whileHover={!reducedMotion ? { scale: 1.015 } : undefined}
-      transition={{ type: "spring", stiffness: 160, damping: 22 }}
-      className={`relative aspect-[3/4] w-full max-w-[400px] overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_80px_rgba(0,212,255,0.18)] max-md:max-w-[80vw] ${className ?? ""}`}
+      initial={reducedMotion ? undefined : { opacity: 0, y: 24 }}
+      animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+      className={`relative aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_100px_rgba(0,212,255,0.15)] max-md:max-w-[75vw] ${className ?? ""}`}
     >
-      {/* Fotoğraf */}
       {isMediaVideo ? (
         <video src={src} autoPlay loop muted playsInline className="h-full w-full object-cover" />
       ) : (
@@ -36,70 +36,11 @@ function ProductStage({ mediaSrc, alt = "ŞarjUp cihazı", className }: ProductS
           src={src}
           alt={alt}
           fill
-          className="object-cover object-center"
-          sizes="(max-width: 768px) 80vw, 400px"
+          className="object-cover object-top"
+          sizes="(max-width: 768px) 75vw, 360px"
           priority
         />
       )}
-
-      {/* Alt gradient — kartlar okunsun */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-
-      {/* Floating stat — sol üst: pil */}
-      <motion.div
-        className="absolute left-3 top-5 flex items-center gap-2 rounded-xl border border-white/15 bg-black/55 px-3 py-2 backdrop-blur-md"
-        initial={reducedMotion ? undefined : { opacity: 0, x: -16 }}
-        animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
-        transition={{ delay: 0.9, duration: 0.6 }}
-      >
-        <span className="text-base">🔋</span>
-        <div>
-          <p className="text-[9px] font-mono text-white/45 uppercase tracking-wider">Kapasite</p>
-          <p className="text-[13px] font-bold text-white">20.000 mAh</p>
-        </div>
-      </motion.div>
-
-      {/* Floating stat — sağ üst: NFC */}
-      <motion.div
-        className="absolute right-3 top-5 flex items-center gap-2 rounded-xl border border-white/15 bg-black/55 px-3 py-2 backdrop-blur-md"
-        initial={reducedMotion ? undefined : { opacity: 0, x: 16 }}
-        animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
-        transition={{ delay: 1.1, duration: 0.6 }}
-      >
-        <span className="text-base">📡</span>
-        <div>
-          <p className="text-[9px] font-mono text-white/45 uppercase tracking-wider">Aktivasyon</p>
-          <p className="text-[13px] font-bold text-white">NFC v3.0</p>
-        </div>
-      </motion.div>
-
-      {/* Floating stat — sol alt: koruma */}
-      <motion.div
-        className="absolute bottom-5 left-3 flex items-center gap-2 rounded-xl border border-white/15 bg-black/55 px-3 py-2 backdrop-blur-md"
-        initial={reducedMotion ? undefined : { opacity: 0, x: -16 }}
-        animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
-        transition={{ delay: 1.3, duration: 0.6 }}
-      >
-        <span className="text-base">🛡️</span>
-        <div>
-          <p className="text-[9px] font-mono text-white/45 uppercase tracking-wider">Koruma</p>
-          <p className="text-[13px] font-bold text-white">IP54</p>
-        </div>
-      </motion.div>
-
-      {/* Floating stat — sağ alt: konnektör */}
-      <motion.div
-        className="absolute bottom-5 right-3 flex items-center gap-2 rounded-xl border border-white/15 bg-black/55 px-3 py-2 backdrop-blur-md"
-        initial={reducedMotion ? undefined : { opacity: 0, x: 16 }}
-        animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
-      >
-        <span className="text-base">🔌</span>
-        <div>
-          <p className="text-[9px] font-mono text-white/45 uppercase tracking-wider">Konnektör</p>
-          <p className="text-[13px] font-bold text-white">3-in-1</p>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }
@@ -221,19 +162,8 @@ export function CinematicHero() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-8 right-8 hidden w-[240px] rounded-2xl border border-black/10 bg-white/65 p-5 font-mono text-[11px] tracking-[0.08em] text-black/60 backdrop-blur-md lg:block dark:border-white/10 dark:bg-black/55 dark:text-white/60" style={{ zIndex: 5 }}>
-          <div className="text-black/40 dark:text-white/40">MODEL_NAME</div>
-          <div className="mt-1 text-black/85 dark:text-white/80">Şarjup Pro Series</div>
-          <div className="mt-4 text-black/40 dark:text-white/40">STATUS</div>
-          <div className="mt-1 flex items-center gap-2 text-black/85 dark:text-white/80">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            Production Ready
-          </div>
-          <div className="mt-4 text-black/40 dark:text-white/40">COVERAGE</div>
-          <div className="mt-1 text-black/85 dark:text-white/80">50+ partner locations</div>
-        </div>
 
-        <div className="absolute bottom-7 left-6 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-black/40 dark:text-white/40 md:left-10">
+<div className="absolute bottom-7 left-6 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-black/40 dark:text-white/40 md:left-10">
           <motion.div
             className="h-px bg-current"
             animate={reducedMotion ? undefined : { width: [24, 50, 24] }}
