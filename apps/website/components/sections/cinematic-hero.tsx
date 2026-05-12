@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useMemo } from "react";
+import { SarjupDevice } from "@/components/sarjup-device";
 
 type ProductStageProps = {
   mediaSrc?: string;
@@ -36,49 +37,79 @@ function ProductStage({ mediaSrc, alt = "Sora media slot", className }: ProductS
           <Image src={mediaSrc} alt={alt} fill className="object-cover" sizes="(max-width: 768px) 90vw, 60vw" />
         )
       ) : (
-        <div className="relative h-full w-full">
-          {!reducedMotion ? (
-            <>
-              <motion.div
-                className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/25"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div
-                className="absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-300/20"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 58, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div
-                className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-200/10"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 72, repeat: Infinity, ease: "linear" }}
-              />
-            </>
-          ) : null}
-
-          <div className="absolute left-4 top-4 text-white/30">+</div>
-          <div className="absolute right-4 top-4 text-white/30">+</div>
-          <div className="absolute bottom-4 left-4 text-white/30">+</div>
-          <div className="absolute bottom-4 right-4 text-white/30">+</div>
-
-          <svg viewBox="0 0 200 200" className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2">
-            <motion.polygon
-              points="100,20 165,60 165,140 100,180 35,140 35,60"
-              fill="none"
-              stroke="url(#stageGradient)"
-              strokeWidth="2.4"
-              animate={reducedMotion ? undefined : { rotate: 360 }}
-              transition={{ duration: 60, ease: "linear", repeat: Infinity }}
-              style={{ transformOrigin: "50% 50%" }}
+        <div className="relative flex h-full w-full items-center justify-center overflow-visible">
+          {/* Ambient ring */}
+          {!reducedMotion && (
+            <motion.div
+              className="absolute h-[340px] w-[340px] rounded-full border border-cyan-400/10"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
             />
-            <defs>
-              <linearGradient id="stageGradient" x1="0%" x2="100%" y1="0%" y2="100%">
-                <stop offset="0%" stopColor="#00D4FF" />
-                <stop offset="100%" stopColor="#00FF88" />
-              </linearGradient>
-            </defs>
-          </svg>
+          )}
+
+          {/* Device */}
+          <motion.div
+            animate={reducedMotion ? undefined : { y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <SarjupDevice width={320} height={298} />
+          </motion.div>
+
+          {/* Floating stat — sol üst: pil */}
+          <motion.div
+            className="absolute left-2 top-8 flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md"
+            initial={reducedMotion ? undefined : { opacity: 0, x: -16 }}
+            animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+          >
+            <span className="text-lg">🔋</span>
+            <div>
+              <p className="text-[10px] font-mono text-white/40 uppercase tracking-wider">Kapasite</p>
+              <p className="text-sm font-bold text-white">20.000 mAh</p>
+            </div>
+          </motion.div>
+
+          {/* Floating stat — sağ üst: NFC */}
+          <motion.div
+            className="absolute right-2 top-8 flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md"
+            initial={reducedMotion ? undefined : { opacity: 0, x: 16 }}
+            animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+          >
+            <span className="text-lg">📡</span>
+            <div>
+              <p className="text-[10px] font-mono text-white/40 uppercase tracking-wider">Aktivasyon</p>
+              <p className="text-sm font-bold text-white">NFC v3.0</p>
+            </div>
+          </motion.div>
+
+          {/* Floating stat — sol alt: koruma */}
+          <motion.div
+            className="absolute bottom-10 left-2 flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md"
+            initial={reducedMotion ? undefined : { opacity: 0, x: -16 }}
+            animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
+            transition={{ delay: 1.3, duration: 0.6 }}
+          >
+            <span className="text-lg">🛡️</span>
+            <div>
+              <p className="text-[10px] font-mono text-white/40 uppercase tracking-wider">Koruma</p>
+              <p className="text-sm font-bold text-white">IP54</p>
+            </div>
+          </motion.div>
+
+          {/* Floating stat — sağ alt: konnektör */}
+          <motion.div
+            className="absolute bottom-10 right-2 flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md"
+            initial={reducedMotion ? undefined : { opacity: 0, x: 16 }}
+            animate={reducedMotion ? undefined : { opacity: 1, x: 0 }}
+            transition={{ delay: 1.5, duration: 0.6 }}
+          >
+            <span className="text-lg">🔌</span>
+            <div>
+              <p className="text-[10px] font-mono text-white/40 uppercase tracking-wider">Konnektör</p>
+              <p className="text-sm font-bold text-white">3-in-1</p>
+            </div>
+          </motion.div>
         </div>
       )}
     </motion.div>
