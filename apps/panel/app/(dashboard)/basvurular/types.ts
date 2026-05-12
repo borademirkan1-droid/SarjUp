@@ -6,6 +6,8 @@ export type Lead = {
   phone: string | null;
   business_type: string | null;
   region: string | null;
+  il: string | null;
+  ilce: string | null;
   message: string | null;
   status: string;
   source: string;

@@ -4,11 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { exportLeadsExcel } from "@/lib/export-utils";
-import {
-  getIllerWithData,
-  getIlcelerOfIl,
-  getRegionValuesForIl,
-} from "@/lib/turkey-regions";
 import { type Lead, statusConfig } from "../types";
 
 const PAGE_SIZE = 15;
@@ -25,7 +20,7 @@ export function useLeads() {
   // Filtreler
   const [arama, setArama] = useState("");
   const [durum, setDurum] = useState("Tümü");
-  const [il, setIl] = useState("Tümü");
+  const [il, setIlState] = useState("Tümü");
   const [ilce, setIlce] = useState("Tümü");
   const [sektor, setSektor] = useState("Tümü");
   const [kaynak, setKaynak] = useState("Tümü");
@@ -33,21 +28,24 @@ export function useLeads() {
   const [tarihBitis, setTarihBitis] = useState("");
   const [page, setPage] = useState(1);
 
-  // DB'den gelen tüm unique region değerleri (statik, bir kez yüklenir)
-  const [dbRegions, setDbRegions] = useState<string[]>([]);
+  // Filtre seçenekleri — yeni kolonlardan direkt çekilir
+  const [ilListesi, setIlListesi] = useState<string[]>([]);
+  const [ilceListesi, setIlceListesi] = useState<string[]>([]);
   const [sektorListesi, setSektorListesi] = useState<string[]>([]);
 
-  // Filtre seçeneklerini yükle (bir kez)
+  // İl listesi: bir kez yükle
   useEffect(() => {
-    async function loadFilterOptions() {
-      const [regionRes, sektorRes] = await Promise.all([
-        supabase.from("leads").select("region").not("region", "is", null),
+    async function loadIller() {
+      const [ilRes, sektorRes] = await Promise.all([
+        supabase.from("leads").select("il").not("il", "is", null),
         supabase.from("leads").select("business_type").not("business_type", "is", null),
       ]);
 
-      if (regionRes.data) {
-        const unique = [...new Set(regionRes.data.map((r) => r.region as string))].filter(Boolean);
-        setDbRegions(unique);
+      if (ilRes.data) {
+        const unique = [...new Set(ilRes.data.map((r) => r.il as string))]
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b, "tr"));
+        setIlListesi(unique);
       }
 
       if (sektorRes.data) {
@@ -62,19 +60,31 @@ export function useLeads() {
         setSektorListesi([...new Set(normalized)].sort((a, b) => a.localeCompare(b, "tr")));
       }
     }
-    loadFilterOptions();
+    loadIller();
   }, []);
 
-  // Türetilmiş listeler — dbRegions yüklenince hesaplanır
-  const ilListesi = useMemo(() => getIllerWithData(dbRegions), [dbRegions]);
-  const ilceListesi = useMemo(
-    () => (il !== "Tümü" ? getIlcelerOfIl(il, dbRegions) : []),
-    [il, dbRegions]
-  );
+  // İlçe listesi: il değişince yükle
+  useEffect(() => {
+    if (il === "Tümü") { setIlceListesi([]); return; }
+    async function loadIlceler() {
+      const { data } = await supabase
+        .from("leads")
+        .select("ilce")
+        .eq("il", il)
+        .not("ilce", "is", null);
+      if (data) {
+        const unique = [...new Set(data.map((r) => r.ilce as string))]
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b, "tr"));
+        setIlceListesi(unique);
+      }
+    }
+    loadIlceler();
+  }, [il]);
 
-  // İl değişince ilçeyi sıfırla
-  function setIlWithReset(newIl: string) {
-    setIl(newIl);
+  // İl seçilince ilçeyi sıfırla
+  function setIl(newIl: string) {
+    setIlState(newIl);
     setIlce("Tümü");
     setPage(1);
   }
@@ -86,13 +96,11 @@ export function useLeads() {
       if (key) q = q.eq("status", key);
     }
 
-    // Bölge filtresi: ilçe seçildiyse sadece ilçe, il seçildiyse tüm region değerleri
+    // il / ilçe — artık temiz kolonlar
     if (ilce !== "Tümü") {
-      q = q.eq("region", ilce);
+      q = q.eq("ilce", ilce);
     } else if (il !== "Tümü") {
-      const vals = getRegionValuesForIl(il, dbRegions);
-      if (vals.length === 1) q = q.eq("region", vals[0]);
-      else if (vals.length > 1) q = q.in("region", vals);
+      q = q.eq("il", il);
     }
 
     if (sektor !== "Tümü") {
@@ -137,7 +145,7 @@ export function useLeads() {
     } finally {
       setLoading(false);
     }
-  }, [page, arama, durum, il, ilce, sektor, kaynak, tarihBas, tarihBitis, dbRegions]);
+  }, [page, arama, durum, il, ilce, sektor, kaynak, tarihBas, tarihBitis]);
 
   useEffect(() => {
     fetchLeads();
@@ -146,7 +154,7 @@ export function useLeads() {
   function resetFilters() {
     setArama("");
     setDurum("Tümü");
-    setIl("Tümü");
+    setIlState("Tümü");
     setIlce("Tümü");
     setSektor("Tümü");
     setKaynak("Tümü");
@@ -194,7 +202,6 @@ export function useLeads() {
         .from("leads")
         .select("*")
         .order("created_at", { ascending: false });
-
       const { data, error } = await applyFilters(base);
       if (error) throw error;
       exportLeadsExcel(data ?? []);
@@ -213,9 +220,7 @@ export function useLeads() {
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    leads.forEach((l) => {
-      counts[l.status] = (counts[l.status] ?? 0) + 1;
-    });
+    leads.forEach((l) => { counts[l.status] = (counts[l.status] ?? 0) + 1; });
     return counts;
   }, [leads]);
 
@@ -230,31 +235,20 @@ export function useLeads() {
     arama.trim() !== "";
 
   return {
-    leads,
-    totalCount,
-    loading,
+    leads, totalCount, loading,
     arama, setArama,
     durum, setDurum,
-    il, setIl: setIlWithReset,
+    il, setIl,
     ilce, setIlce,
     sektor, setSektor,
     kaynak, setKaynak,
     tarihBas, setTarihBas,
     tarihBitis, setTarihBitis,
     page, setPage,
-    updatingId,
-    exporting,
-    totalPages,
-    pageNumbers,
-    statusCounts,
-    ilListesi,
-    ilceListesi,
-    sektorListesi,
+    updatingId, exporting,
+    totalPages, pageNumbers, statusCounts,
+    ilListesi, ilceListesi, sektorListesi,
     hasActiveFilters,
-    fetchLeads,
-    resetFilters,
-    updateStatus,
-    saveNote,
-    handleExport,
+    fetchLeads, resetFilters, updateStatus, saveNote, handleExport,
   };
 }

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 import { SEARCH_TARGETS, CITIES, SCRAPER_CONFIG, CITY_BATCHES } from './config'
+import { REGION_TO_IL } from '../../lib/turkey-regions'
 
 // Load env from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
@@ -157,12 +158,18 @@ async function scrapeQueryCity(
           continue
         }
 
+        // il / ilce hesapla
+        const ilValue = REGION_TO_IL[city] ?? city
+        const ilceValue = REGION_TO_IL[city] !== city ? city : null
+
         // Insert to Supabase
         const { error } = await supabase.from('leads').insert({
           first_name: name,
           phone: phone || null,
           business_type: businessType,
           region: city,
+          il: ilValue,
+          ilce: ilceValue,
           message: address || null,
           notes: website || null,
           status: 'new',
