@@ -153,6 +153,8 @@ type LeadExportRow = {
   phone: string | null;
   business_type: string | null;
   region: string | null;
+  il: string | null;
+  ilce: string | null;
   message: string | null;
   status: string;
   source: string;
@@ -215,22 +217,55 @@ export function exportRaporExcel(data: RaporExcelData) {
   dosyaYaz(wb, `SarjUp_Rapor_${tarihDamgasi()}.xlsx`)
 }
 
+const SEKTOR_LABEL: Record<string, string> = {
+  cafe: "Kafe",
+  Kafe: "Kafe",
+  restaurant: "Restoran",
+  hotel: "Otel",
+  other: "Diğer",
+};
+
+const DURUM_LABEL: Record<string, string> = {
+  new: "Yeni",
+  contacted: "İletişime Geçildi",
+  interested: "İlgileniyor",
+  converted: "Partner Oldu",
+  rejected: "Reddedildi",
+};
+
 export function exportLeadsExcel(leads: LeadExportRow[]) {
   const rows = leads.map((l) => ({
-    Ad: l.first_name,
-    Soyad: l.last_name ?? "",
-    Email: l.email ?? "",
+    "İşletme Adı": l.first_name,
     Telefon: l.phone ?? "",
-    "İşletme Türü": l.business_type ?? "",
-    Bölge: l.region ?? "",
-    Mesaj: l.message ?? "",
-    Durum: l.status,
+    Email: l.email ?? "",
+    İl: l.il ?? "",
+    İlçe: l.ilce ?? "",
+    Sektör: SEKTOR_LABEL[l.business_type ?? ""] ?? (l.business_type ?? ""),
+    Durum: DURUM_LABEL[l.status] ?? l.status,
     Kaynak: l.source === "google_maps_scraper" ? "Google Maps" : "Web Form",
-    Not: l.notes ?? "",
+    Website: l.notes ?? "",
+    Adres: l.message ?? "",
     Tarih: new Date(l.created_at).toLocaleDateString("tr-TR"),
   }));
+
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, "Leads");
-  dosyaYaz(wb, `SarjUp_Leads_${tarihDamgasi()}.xlsx`);
+
+  // Kolon genişlikleri
+  ws["!cols"] = [
+    { wch: 35 }, // İşletme Adı
+    { wch: 16 }, // Telefon
+    { wch: 28 }, // Email
+    { wch: 16 }, // İl
+    { wch: 18 }, // İlçe
+    { wch: 12 }, // Sektör
+    { wch: 20 }, // Durum
+    { wch: 14 }, // Kaynak
+    { wch: 35 }, // Website
+    { wch: 50 }, // Adres
+    { wch: 12 }, // Tarih
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, "Başvurular");
+  dosyaYaz(wb, `SarjUp_Basvurular_${tarihDamgasi()}.xlsx`);
 }

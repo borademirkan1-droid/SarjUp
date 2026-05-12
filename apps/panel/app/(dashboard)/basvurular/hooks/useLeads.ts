@@ -188,13 +188,27 @@ export function useLeads() {
   async function handleExport() {
     setExporting(true);
     try {
-      const base = supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-      const { data, error } = await applyFilters(base);
-      if (error) throw error;
-      exportLeadsExcel(data ?? []);
+      const BATCH = 1000;
+      let allData: Lead[] = [];
+      let from = 0;
+
+      while (true) {
+        const base = supabase
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, from + BATCH - 1);
+
+        const { data, error } = await applyFilters(base);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData = [...allData, ...data];
+        if (data.length < BATCH) break;
+        from += BATCH;
+      }
+
+      exportLeadsExcel(allData);
+      toast.success(`${allData.length.toLocaleString("tr-TR")} kayıt indirildi`);
     } catch {
       toast.error("Export başarısız");
     } finally {
