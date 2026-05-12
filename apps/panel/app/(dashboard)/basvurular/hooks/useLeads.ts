@@ -20,7 +20,7 @@ export function useLeads() {
   // Filtreler
   const [arama, setArama] = useState("");
   const [durum, setDurum] = useState("Tümü");
-  const [il, setIl] = useState("Tümü");
+  const [bolge, setBolge] = useState("Tümü"); // il + ilçe (region kolonu karışık)
   const [sektor, setSektor] = useState("Tümü");
   const [kaynak, setKaynak] = useState("Tümü");
   const [tarihBas, setTarihBas] = useState("");
@@ -28,33 +28,31 @@ export function useLeads() {
   const [page, setPage] = useState(1);
 
   // Dinamik filtre seçenekleri
-  const [ilListesi, setIlListesi] = useState<string[]>([]);
+  const [bolgeListesi, setBolgeListesi] = useState<string[]>([]);
   const [sektorListesi, setSektorListesi] = useState<string[]>([]);
 
-  // İl ve sektör listelerini yükle (bir kez)
+  // Bölge ve sektör listelerini yükle (bir kez)
   useEffect(() => {
     async function loadFilterOptions() {
-      const [ilRes, sektorRes] = await Promise.all([
+      const [bolgeRes, sektorRes] = await Promise.all([
         supabase
           .from("leads")
           .select("region")
-          .not("region", "is", null)
-          .order("region"),
+          .not("region", "is", null),
         supabase
           .from("leads")
           .select("business_type")
           .not("business_type", "is", null),
       ]);
 
-      if (ilRes.data) {
-        const unique = [...new Set(ilRes.data.map((r) => r.region as string))]
+      if (bolgeRes.data) {
+        const unique = [...new Set(bolgeRes.data.map((r) => r.region as string))]
           .filter(Boolean)
           .sort((a, b) => a.localeCompare(b, "tr"));
-        setIlListesi(unique);
+        setBolgeListesi(unique);
       }
 
       if (sektorRes.data) {
-        // Normalize: "cafe" ve "Kafe" aynı şey
         const normalized = sektorRes.data.map((r) => {
           const v = (r.business_type as string).toLowerCase().trim();
           if (v === "kafe" || v === "cafe") return "Kafe";
@@ -69,13 +67,13 @@ export function useLeads() {
     loadFilterOptions();
   }, []);
 
-  // Ortak filtre uygulayıcı — tip sorununu önlemek için inline kullanılan yardımcı
+  // Ortak filtre uygulayıcı
   function applyFilters<T extends { eq: Function; in: Function; gte: Function; lte: Function; or: Function }>(q: T): T {
     if (durum !== "Tümü") {
       const key = Object.entries(statusConfig).find(([, v]) => v.label === durum)?.[0];
       if (key) q = q.eq("status", key);
     }
-    if (il !== "Tümü") q = q.eq("region", il);
+    if (bolge !== "Tümü") q = q.eq("region", bolge);
     if (sektor !== "Tümü") {
       const dbValues: Record<string, string[]> = {
         Kafe: ["cafe", "Kafe"],
@@ -117,7 +115,7 @@ export function useLeads() {
     } finally {
       setLoading(false);
     }
-  }, [page, arama, durum, il, sektor, kaynak, tarihBas, tarihBitis]);
+  }, [page, arama, durum, bolge, sektor, kaynak, tarihBas, tarihBitis]);
 
   useEffect(() => {
     fetchLeads();
@@ -126,7 +124,7 @@ export function useLeads() {
   function resetFilters() {
     setArama("");
     setDurum("Tümü");
-    setIl("Tümü");
+    setBolge("Tümü");
     setSektor("Tümü");
     setKaynak("Tümü");
     setTarihBas("");
@@ -200,7 +198,7 @@ export function useLeads() {
 
   const hasActiveFilters =
     durum !== "Tümü" ||
-    il !== "Tümü" ||
+    bolge !== "Tümü" ||
     sektor !== "Tümü" ||
     kaynak !== "Tümü" ||
     tarihBas !== "" ||
@@ -213,7 +211,7 @@ export function useLeads() {
     loading,
     arama, setArama,
     durum, setDurum,
-    il, setIl,
+    bolge, setBolge,
     sektor, setSektor,
     kaynak, setKaynak,
     tarihBas, setTarihBas,
@@ -224,7 +222,7 @@ export function useLeads() {
     totalPages,
     pageNumbers,
     statusCounts,
-    ilListesi,
+    bolgeListesi,
     sektorListesi,
     hasActiveFilters,
     fetchLeads,
