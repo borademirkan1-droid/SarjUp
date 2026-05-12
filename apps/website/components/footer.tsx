@@ -126,13 +126,7 @@ export function Footer() {
               height={33}
               className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
             />
-            <Image
-              src="/logos/iyzico.svg"
-              alt="iyzico ile öde"
-              width={90}
-              height={30}
-              className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
-            />
+
           </div>
         </div>
 
