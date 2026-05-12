@@ -4,6 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { exportLeadsExcel } from "@/lib/export-utils";
+import {
+  getIllerWithData,
+  getIlcelerOfIl,
+  getRegionValuesForIl,
+} from "@/lib/turkey-regions";
 import { type Lead, statusConfig } from "../types";
 
 const PAGE_SIZE = 15;
@@ -20,36 +25,29 @@ export function useLeads() {
   // Filtreler
   const [arama, setArama] = useState("");
   const [durum, setDurum] = useState("Tümü");
-  const [bolge, setBolge] = useState("Tümü"); // il + ilçe (region kolonu karışık)
+  const [il, setIl] = useState("Tümü");
+  const [ilce, setIlce] = useState("Tümü");
   const [sektor, setSektor] = useState("Tümü");
   const [kaynak, setKaynak] = useState("Tümü");
   const [tarihBas, setTarihBas] = useState("");
   const [tarihBitis, setTarihBitis] = useState("");
   const [page, setPage] = useState(1);
 
-  // Dinamik filtre seçenekleri
-  const [bolgeListesi, setBolgeListesi] = useState<string[]>([]);
+  // DB'den gelen tüm unique region değerleri (statik, bir kez yüklenir)
+  const [dbRegions, setDbRegions] = useState<string[]>([]);
   const [sektorListesi, setSektorListesi] = useState<string[]>([]);
 
-  // Bölge ve sektör listelerini yükle (bir kez)
+  // Filtre seçeneklerini yükle (bir kez)
   useEffect(() => {
     async function loadFilterOptions() {
-      const [bolgeRes, sektorRes] = await Promise.all([
-        supabase
-          .from("leads")
-          .select("region")
-          .not("region", "is", null),
-        supabase
-          .from("leads")
-          .select("business_type")
-          .not("business_type", "is", null),
+      const [regionRes, sektorRes] = await Promise.all([
+        supabase.from("leads").select("region").not("region", "is", null),
+        supabase.from("leads").select("business_type").not("business_type", "is", null),
       ]);
 
-      if (bolgeRes.data) {
-        const unique = [...new Set(bolgeRes.data.map((r) => r.region as string))]
-          .filter(Boolean)
-          .sort((a, b) => a.localeCompare(b, "tr"));
-        setBolgeListesi(unique);
+      if (regionRes.data) {
+        const unique = [...new Set(regionRes.data.map((r) => r.region as string))].filter(Boolean);
+        setDbRegions(unique);
       }
 
       if (sektorRes.data) {
@@ -67,13 +65,36 @@ export function useLeads() {
     loadFilterOptions();
   }, []);
 
+  // Türetilmiş listeler — dbRegions yüklenince hesaplanır
+  const ilListesi = useMemo(() => getIllerWithData(dbRegions), [dbRegions]);
+  const ilceListesi = useMemo(
+    () => (il !== "Tümü" ? getIlcelerOfIl(il, dbRegions) : []),
+    [il, dbRegions]
+  );
+
+  // İl değişince ilçeyi sıfırla
+  function setIlWithReset(newIl: string) {
+    setIl(newIl);
+    setIlce("Tümü");
+    setPage(1);
+  }
+
   // Ortak filtre uygulayıcı
   function applyFilters<T extends { eq: Function; in: Function; gte: Function; lte: Function; or: Function }>(q: T): T {
     if (durum !== "Tümü") {
       const key = Object.entries(statusConfig).find(([, v]) => v.label === durum)?.[0];
       if (key) q = q.eq("status", key);
     }
-    if (bolge !== "Tümü") q = q.eq("region", bolge);
+
+    // Bölge filtresi: ilçe seçildiyse sadece ilçe, il seçildiyse tüm region değerleri
+    if (ilce !== "Tümü") {
+      q = q.eq("region", ilce);
+    } else if (il !== "Tümü") {
+      const vals = getRegionValuesForIl(il, dbRegions);
+      if (vals.length === 1) q = q.eq("region", vals[0]);
+      else if (vals.length > 1) q = q.in("region", vals);
+    }
+
     if (sektor !== "Tümü") {
       const dbValues: Record<string, string[]> = {
         Kafe: ["cafe", "Kafe"],
@@ -85,6 +106,7 @@ export function useLeads() {
       if (vals?.length === 1) q = q.eq("business_type", vals[0]);
       else if (vals?.length > 1) q = q.in("business_type", vals);
     }
+
     if (kaynak !== "Tümü") q = q.eq("source", kaynak);
     if (tarihBas) q = q.gte("created_at", tarihBas);
     if (tarihBitis) q = q.lte("created_at", `${tarihBitis}T23:59:59`);
@@ -115,7 +137,7 @@ export function useLeads() {
     } finally {
       setLoading(false);
     }
-  }, [page, arama, durum, bolge, sektor, kaynak, tarihBas, tarihBitis]);
+  }, [page, arama, durum, il, ilce, sektor, kaynak, tarihBas, tarihBitis, dbRegions]);
 
   useEffect(() => {
     fetchLeads();
@@ -124,7 +146,8 @@ export function useLeads() {
   function resetFilters() {
     setArama("");
     setDurum("Tümü");
-    setBolge("Tümü");
+    setIl("Tümü");
+    setIlce("Tümü");
     setSektor("Tümü");
     setKaynak("Tümü");
     setTarihBas("");
@@ -198,7 +221,8 @@ export function useLeads() {
 
   const hasActiveFilters =
     durum !== "Tümü" ||
-    bolge !== "Tümü" ||
+    il !== "Tümü" ||
+    ilce !== "Tümü" ||
     sektor !== "Tümü" ||
     kaynak !== "Tümü" ||
     tarihBas !== "" ||
@@ -211,7 +235,8 @@ export function useLeads() {
     loading,
     arama, setArama,
     durum, setDurum,
-    bolge, setBolge,
+    il, setIl: setIlWithReset,
+    ilce, setIlce,
     sektor, setSektor,
     kaynak, setKaynak,
     tarihBas, setTarihBas,
@@ -222,7 +247,8 @@ export function useLeads() {
     totalPages,
     pageNumbers,
     statusCounts,
-    bolgeListesi,
+    ilListesi,
+    ilceListesi,
     sektorListesi,
     hasActiveFilters,
     fetchLeads,

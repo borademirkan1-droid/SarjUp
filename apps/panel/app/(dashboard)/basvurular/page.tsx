@@ -43,6 +43,8 @@ export default function BasvurularPage() {
     },
   });
 
+  const ilSecili = leadsHook.il !== "Tümü";
+
   return (
     <div className="space-y-6">
       {/* Başlık */}
@@ -151,21 +153,47 @@ export default function BasvurularPage() {
           {/* Gelişmiş filtreler */}
           {filtrelerAcik && (
             <div className="mt-3 grid grid-cols-2 gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-4">
-              {/* İl / İlçe — arama destekli combobox */}
+
+              {/* İl — arama destekli */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  İl / İlçe
-                </label>
+                <label className="text-xs font-medium text-muted-foreground">İl</label>
                 <FilterCombobox
-                  options={leadsHook.bolgeListesi}
-                  value={leadsHook.bolge}
-                  allLabel="Tüm Bölgeler"
-                  placeholder="İl veya ilçe ara…"
-                  onChange={(v) => {
-                    leadsHook.setBolge(v);
-                    leadsHook.setPage(1);
-                  }}
+                  options={leadsHook.ilListesi}
+                  value={leadsHook.il}
+                  allLabel="Tüm İller"
+                  placeholder="İl ara…"
+                  onChange={(v) => leadsHook.setIl(v)}
                 />
+              </div>
+
+              {/* İlçe — il seçilmediyse devre dışı */}
+              <div className="flex flex-col gap-1">
+                <label
+                  className={`text-xs font-medium ${
+                    ilSecili ? "text-muted-foreground" : "text-muted-foreground/40"
+                  }`}
+                >
+                  İlçe
+                  {!ilSecili && (
+                    <span className="ml-1 text-[10px] font-normal">(önce il seçin)</span>
+                  )}
+                </label>
+                {ilSecili ? (
+                  <FilterCombobox
+                    options={leadsHook.ilceListesi}
+                    value={leadsHook.ilce}
+                    allLabel="Tüm İlçeler"
+                    placeholder="İlçe ara…"
+                    onChange={(v) => {
+                      leadsHook.setIlce(v);
+                      leadsHook.setPage(1);
+                    }}
+                  />
+                ) : (
+                  <div className="flex h-8 items-center rounded-md border border-input bg-muted/40 px-3 text-sm text-muted-foreground/40 cursor-not-allowed select-none">
+                    İlçe seçin
+                  </div>
+                )}
               </div>
 
               {/* Sektör */}
@@ -214,11 +242,9 @@ export default function BasvurularPage() {
               </div>
 
               {/* Tarih aralığı */}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Tarih Aralığı
-                </label>
-                <div className="flex items-center gap-1">
+              <div className="col-span-2 flex flex-col gap-1">
+                <label className="text-xs font-medium text-muted-foreground">Tarih Aralığı</label>
+                <div className="flex items-center gap-2">
                   <Input
                     type="date"
                     value={leadsHook.tarihBas}
