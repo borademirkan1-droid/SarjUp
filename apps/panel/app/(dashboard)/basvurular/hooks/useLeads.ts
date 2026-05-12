@@ -33,19 +33,16 @@ export function useLeads() {
   const [ilceListesi, setIlceListesi] = useState<string[]>([]);
   const [sektorListesi, setSektorListesi] = useState<string[]>([]);
 
-  // İl listesi: bir kez yükle
+  // İl listesi: RPC ile bir kez yükle (distinct, limit sorunu yok)
   useEffect(() => {
     async function loadIller() {
       const [ilRes, sektorRes] = await Promise.all([
-        supabase.from("leads").select("il").not("il", "is", null),
-        supabase.from("leads").select("business_type").not("business_type", "is", null),
+        supabase.rpc("get_distinct_iller"),
+        supabase.from("leads").select("business_type").not("business_type", "is", null).limit(5000),
       ]);
 
       if (ilRes.data) {
-        const unique = [...new Set(ilRes.data.map((r) => r.il as string))]
-          .filter(Boolean)
-          .sort((a, b) => a.localeCompare(b, "tr"));
-        setIlListesi(unique);
+        setIlListesi((ilRes.data as { il: string }[]).map((r) => r.il));
       }
 
       if (sektorRes.data) {
@@ -63,20 +60,13 @@ export function useLeads() {
     loadIller();
   }, []);
 
-  // İlçe listesi: il değişince yükle
+  // İlçe listesi: il seçilince RPC ile yükle (distinct, limit sorunu yok)
   useEffect(() => {
     if (il === "Tümü") { setIlceListesi([]); return; }
     async function loadIlceler() {
-      const { data } = await supabase
-        .from("leads")
-        .select("ilce")
-        .eq("il", il)
-        .not("ilce", "is", null);
+      const { data } = await supabase.rpc("get_distinct_ilceler", { p_il: il });
       if (data) {
-        const unique = [...new Set(data.map((r) => r.ilce as string))]
-          .filter(Boolean)
-          .sort((a, b) => a.localeCompare(b, "tr"));
-        setIlceListesi(unique);
+        setIlceListesi((data as { ilce: string }[]).map((r) => r.ilce));
       }
     }
     loadIlceler();
